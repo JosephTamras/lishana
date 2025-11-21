@@ -1,0 +1,13 @@
+{
+  "name": "lishana",
+  "version": "1.0.0",
+  "description": "An Assyrian-English dictioary application that allows hybrid search.",
+  "main": "index.js",
+  "scripts": {
+    "typesense:start": "sudo /usr/bin/./typesense-server --config=/etc/typesense/typesense-server.ini",
+    "typesense:health": "curl http://localhost:8108/health",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joseph Tamras",
+  "license": "ISC"
+}
