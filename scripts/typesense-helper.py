@@ -174,6 +174,7 @@ if __name__ == "__main__":
     src_path = os.path.join(os.path.dirname(__file__), 'data', 'kaikki.org-dictionary-AssyrianNeoAramaic.jsonl')
     coll = client.client.collections['assyrian_dictionary'].documents
 
+    # Transform function to extract relevant fields
     def transform(rec: dict) -> dict:
         forms = []
         romans = []
@@ -187,21 +188,20 @@ if __name__ == "__main__":
             if 'romanization' in f.get('tags', []):
                 # this is the canonical romanization form
                 romans.append(form)
-        # also some romanization entries use form itself (tags include romanization)
-        romans.extend([f.get('form') for f in rec.get('forms', []) if 'romanization' in f.get('tags', [])])
-        # dedupe
+        # dedupe and remove empty entries
         forms = list(dict.fromkeys([x for x in forms if x]))
         romans = list(dict.fromkeys([x for x in romans if x]))
         glosses = []
-        categories = []
+        # Going to remove categories for now...will add later?
+        # categories = []
         for s in rec.get('senses', []):
-            glosses.extend(s.get('glosses') or s.get('raw_glosses') or [])
-            for c in s.get('categories', []):
-                nm = c.get('name')
-                if nm:
-                    categories.append(nm)
+            glosses.extend(s.get('glosses') or [])
+            # for c in s.get('categories', []):
+            #     nm = c.get('name')
+            #     if nm:
+            #         categories.append(nm)
         glosses = list(dict.fromkeys(glosses))
-        categories = list(dict.fromkeys(categories))
+        # categories = list(dict.fromkeys(categories))
         return {
             'id': f"{rec.get('word','')}_{rec.get('pos','')}",
             'word': rec.get('word',''),
@@ -210,7 +210,7 @@ if __name__ == "__main__":
             'forms': forms,
             'romanizations': romans,
             'glosses': glosses,
-            'categories': categories,
+            # 'categories': categories,
             'senses_count': len(rec.get('senses', [])),
         }
 
@@ -225,20 +225,22 @@ if __name__ == "__main__":
             try:
                 rec = json.loads(line)
             except Exception:
+                print(f"Skipping malformed line: {line[:30]}...")
                 continue  # skip malformed lines
             doc = transform(rec)
             batch.append(doc)
             if len(batch) >= batch_size:
-                # payload = '\n'.join(json.dumps(b, ensure_ascii=False) for b in batch)
-                # coll.import_(payload, {'action': 'upsert'})
-                # imported += len(batch)
-                # batch.clear()
-    # if batch:
-    #     payload = '\n'.join(json.dumps(b, ensure_ascii=False) for b in batch)
-    #     coll.import_(payload, {'action': 'upsert'})
-    #     imported += len(batch)
-    # logger.info("Imported %d documents into assyrian_dictionary", imported)
+                payload = '\n'.join(json.dumps(b, ensure_ascii=False) for b in batch)
+                coll.import_(payload, {'action': 'upsert'})
+                imported += len(batch)
+                batch.clear()
+    if batch:
+        payload = '\n'.join(json.dumps(b, ensure_ascii=False) for b in batch)
+        coll.import_(payload, {'action': 'upsert'})
+        imported += len(batch)
+    logger.info("Imported %d documents into assyrian_dictionary", imported)
 
+    # Example search (uncomment to run)
     # res = client.collections['assyrian_dictionary'].documents.search({
     #     'q': 'ܟܠܒܐ',
     #     'query_by': 'glosses, word, forms, romanizations',
