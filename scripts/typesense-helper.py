@@ -2,6 +2,8 @@ from typing import Dict, Any, Optional, List
 import logging
 import typesense
 import json
+import os
+from pathlib import Path
 
 # /home/joseph/code/lishana/scripts/typesense.py
 # Skeleton Typesense client for a local Typesense server.
@@ -112,8 +114,40 @@ class TypesenseClient:
 
 
 if __name__ == "__main__":
-    # Quick local example usage. Replace API key before running.
-    client = TypesenseClient(api_key="<YOUR_API_KEY>", host="localhost", port=8108, protocol="http")
+    # Quick local example usage.
+    # Load .env from repo root (if present) and read TYPESENSE_API_KEY.
+    def _load_dotenv_from_repo_root(dotenv_filename: str = ".env") -> None:
+        """Load simple KEY=VALUE pairs from a .env file at the repository root into os.environ.
+
+        This avoids adding an external dependency; it only sets variables that are not
+        already present in the environment.
+        """
+        repo_root = Path(__file__).resolve().parents[1]
+        dotenv_path = repo_root / dotenv_filename
+        if not dotenv_path.exists():
+            return
+        try:
+            for raw in dotenv_path.read_text(encoding="utf-8").splitlines():
+                line = raw.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if "=" not in line:
+                    continue
+                key, val = line.split("=", 1)
+                key = key.strip()
+                val = val.strip()
+                if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
+                    val = val[1:-1]
+                if key and key not in os.environ:
+                    os.environ[key] = val
+        except Exception:
+            # Don't fail loudly for this convenience loader; fall back to environment only.
+            pass
+
+    _load_dotenv_from_repo_root()
+
+    api_key = os.getenv("TYPESENSE_API_KEY", "xyz")
+    client = TypesenseClient(api_key=api_key, host="localhost", port=8108, protocol="http")
 
     # Schema for Assyrian dictionary collection (add required 'id' field)
     assyrian_schema = {
@@ -135,78 +169,80 @@ if __name__ == "__main__":
     # Create collection if missing
     # client.ensure_collections([assyrian_schema], overwrite=False)
 
-    # # Import documents from kaikki JSONL
-    # import json, os
-    # src_path = os.path.join(os.path.dirname(__file__), 'data', 'kaikki.org-dictionary-AssyrianNeoAramaic.jsonl')
-    # coll = client.client.collections['assyrian_dictionary'].documents
+    # Import documents from kaikki JSONL
+    import json, os
+    src_path = os.path.join(os.path.dirname(__file__), 'data', 'kaikki.org-dictionary-AssyrianNeoAramaic.jsonl')
+    coll = client.client.collections['assyrian_dictionary'].documents
 
-    # def transform(rec: dict) -> dict:
-    #     forms = []
-    #     romans = []
-    #     for f in rec.get('forms', []):
-    #         form = f.get('form')
-    #         if form:
-    #             forms.append(form)
-    #         if 'roman' in f:
-    #             romans.append(f['roman'])
-    #         if 'romanization' in f.get('tags', []):
-    #             forms.append(f.get('form'))  # already added; harmless
-    #     # also some romanization entries use form itself (tags include romanization)
-    #     romans.extend([f.get('form') for f in rec.get('forms', []) if 'romanization' in f.get('tags', [])])
-    #     # dedupe
-    #     forms = list(dict.fromkeys([x for x in forms if x]))
-    #     romans = list(dict.fromkeys([x for x in romans if x]))
-    #     glosses = []
-    #     categories = []
-    #     for s in rec.get('senses', []):
-    #         glosses.extend(s.get('glosses') or s.get('raw_glosses') or [])
-    #         for c in s.get('categories', []):
-    #             nm = c.get('name')
-    #             if nm:
-    #                 categories.append(nm)
-    #     glosses = list(dict.fromkeys(glosses))
-    #     categories = list(dict.fromkeys(categories))
-    #     return {
-    #         'id': f"{rec.get('word','')}_{rec.get('pos','')}",
-    #         'word': rec.get('word',''),
-    #         'lang_code': rec.get('lang_code',''),
-    #         'pos': rec.get('pos',''),
-    #         'forms': forms,
-    #         'romanizations': romans,
-    #         'glosses': glosses,
-    #         'categories': categories,
-    #         'senses_count': len(rec.get('senses', [])),
-    #     }
+    def transform(rec: dict) -> dict:
+        forms = []
+        romans = []
+        for f in rec.get('forms', []):
+            form = f.get('form')
+            # if the form is in the Syriac Unicode block, include it in forms
+            if form and all('\u0700' <= c <= '\u074F' for c in form):
+                forms.append(form)
+            if 'roman' in f:
+                romans.append(f['roman'])
+            if 'romanization' in f.get('tags', []):
+                # this is the canonical romanization form
+                romans.append(form)
+        # also some romanization entries use form itself (tags include romanization)
+        romans.extend([f.get('form') for f in rec.get('forms', []) if 'romanization' in f.get('tags', [])])
+        # dedupe
+        forms = list(dict.fromkeys([x for x in forms if x]))
+        romans = list(dict.fromkeys([x for x in romans if x]))
+        glosses = []
+        categories = []
+        for s in rec.get('senses', []):
+            glosses.extend(s.get('glosses') or s.get('raw_glosses') or [])
+            for c in s.get('categories', []):
+                nm = c.get('name')
+                if nm:
+                    categories.append(nm)
+        glosses = list(dict.fromkeys(glosses))
+        categories = list(dict.fromkeys(categories))
+        return {
+            'id': f"{rec.get('word','')}_{rec.get('pos','')}",
+            'word': rec.get('word',''),
+            'lang_code': rec.get('lang_code',''),
+            'pos': rec.get('pos',''),
+            'forms': forms,
+            'romanizations': romans,
+            'glosses': glosses,
+            'categories': categories,
+            'senses_count': len(rec.get('senses', [])),
+        }
 
-    # batch = []
-    # batch_size = 500
-    # imported = 0
-    # with open(src_path, 'r', encoding='utf-8') as fh:
-    #     for line in fh:
-    #         line = line.strip()
-    #         if not line:
-    #             continue
-    #         try:
-    #             rec = json.loads(line)
-    #         except Exception:
-    #             continue  # skip malformed lines
-    #         doc = transform(rec)
-    #         batch.append(doc)
-    #         if len(batch) >= batch_size:
-    #             payload = '\n'.join(json.dumps(b, ensure_ascii=False) for b in batch)
-    #             coll.import_(payload, {'action': 'upsert'})
-    #             imported += len(batch)
-    #             batch.clear()
+    batch = []
+    batch_size = 500
+    imported = 0
+    with open(src_path, 'r', encoding='utf-8') as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except Exception:
+                continue  # skip malformed lines
+            doc = transform(rec)
+            batch.append(doc)
+            if len(batch) >= batch_size:
+                # payload = '\n'.join(json.dumps(b, ensure_ascii=False) for b in batch)
+                # coll.import_(payload, {'action': 'upsert'})
+                # imported += len(batch)
+                # batch.clear()
     # if batch:
     #     payload = '\n'.join(json.dumps(b, ensure_ascii=False) for b in batch)
     #     coll.import_(payload, {'action': 'upsert'})
     #     imported += len(batch)
     # logger.info("Imported %d documents into assyrian_dictionary", imported)
 
-    res = client.collections['assyrian_dictionary'].documents.search({
-        'q': 'ܟܠܒܐ',
-        'query_by': 'glosses, word, forms, romanizations',
-        'filter_by': 'pos:=[noun]',
-        'per_page': 5,
-    })
-    print(json.dumps(res, ensure_ascii=False, indent=2))
+    # res = client.collections['assyrian_dictionary'].documents.search({
+    #     'q': 'ܟܠܒܐ',
+    #     'query_by': 'glosses, word, forms, romanizations',
+    #     'filter_by': 'pos:=[noun]',
+    #     'per_page': 5,
+    # })
+    # print(json.dumps(res, ensure_ascii=False, indent=2))
