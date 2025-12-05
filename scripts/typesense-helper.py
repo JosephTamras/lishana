@@ -3,6 +3,7 @@ import logging
 import typesense
 import json
 import os
+import argparse
 from pathlib import Path
 
 # /home/joseph/code/lishana/scripts/typesense.py
@@ -12,7 +13,6 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
-
 
 class TypesenseClient:
     """
@@ -65,20 +65,6 @@ class TypesenseClient:
             raise
 
     def create_collection(self, schema: Dict[str, Any], overwrite: bool = False) -> Dict[str, Any]:
-        """
-        Create a collection from a Typesense schema dict.
-
-        schema example:
-        {
-            "name": "books",
-            "fields": [
-                {"name": "id", "type": "string"},
-                {"name": "title", "type": "string"},
-                {"name": "authors", "type": "string[]", "facet": False},
-            ],
-            "default_sorting_field": "publication_year"
-        }
-        """
         name = schema.get("name")
         if not name:
             raise ValueError("Schema must include a 'name' field")
@@ -112,107 +98,87 @@ class TypesenseClient:
         for schema in schemas:
             self.create_collection(schema, overwrite=overwrite)
 
-
-if __name__ == "__main__":
-    # Quick local example usage.
-    # Load .env from repo root (if present) and read TYPESENSE_API_KEY.
-    def _load_dotenv_from_repo_root(dotenv_filename: str = ".env") -> None:
-        """Load simple KEY=VALUE pairs from a .env file at the repository root into os.environ.
-
-        This avoids adding an external dependency; it only sets variables that are not
-        already present in the environment.
-        """
-        repo_root = Path(__file__).resolve().parents[1]
-        dotenv_path = repo_root / dotenv_filename
-        if not dotenv_path.exists():
-            return
-        try:
-            for raw in dotenv_path.read_text(encoding="utf-8").splitlines():
-                line = raw.strip()
-                if not line or line.startswith("#"):
-                    continue
-                if "=" not in line:
-                    continue
-                key, val = line.split("=", 1)
-                key = key.strip()
-                val = val.strip()
-                if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
-                    val = val[1:-1]
-                if key and key not in os.environ:
-                    os.environ[key] = val
-        except Exception:
-            # Don't fail loudly for this convenience loader; fall back to environment only.
-            pass
-
-    _load_dotenv_from_repo_root()
-
-    api_key = os.getenv("TYPESENSE_API_KEY", "xyz")
-    client = TypesenseClient(api_key=api_key, host="localhost", port=8108, protocol="http")
-
-    # Schema for Assyrian dictionary collection (add required 'id' field)
-    assyrian_schema = {
-        "name": "assyrian_dictionary",
-        "fields": [
-            {"name": "id", "type": "string"},  # unique id (word+pos)
-            {"name": "word", "type": "string"},
-            {"name": "lang_code", "type": "string", "facet": True},
-            {"name": "pos", "type": "string", "facet": True},
-            {"name": "forms", "type": "string[]"},  # list of surface forms
-            {"name": "romanizations", "type": "string[]"},  # extracted romanization forms
-            {"name": "glosses", "type": "string[]"},  # glosses aggregated from senses
-            {"name": "categories", "type": "string[]", "facet": True},
-            {"name": "senses_count", "type": "int32"},  # number of senses for optional sorting
-        ],
-        "default_sorting_field": "senses_count",
-    }
-
-    # Create collection if missing
-    # client.ensure_collections([assyrian_schema], overwrite=False)
-
-    # Import documents from kaikki JSONL
-    import json, os
-    src_path = os.path.join(os.path.dirname(__file__), 'data', 'kaikki.org-dictionary-AssyrianNeoAramaic.jsonl')
-    coll = client.client.collections['assyrian_dictionary'].documents
-
-    # Transform function to extract relevant fields
-    def transform(rec: dict) -> dict:
-        forms = []
-        romans = []
-        for f in rec.get('forms', []):
-            form = f.get('form')
-            # if the form is in the Syriac Unicode block, include it in forms
-            if form and all('\u0700' <= c <= '\u074F' for c in form):
-                forms.append(form)
-            if 'roman' in f:
-                romans.append(f['roman'])
-            if 'romanization' in f.get('tags', []):
-                # this is the canonical romanization form
-                romans.append(form)
-        # dedupe and remove empty entries
-        forms = list(dict.fromkeys([x for x in forms if x]))
-        romans = list(dict.fromkeys([x for x in romans if x]))
-        glosses = []
-        # Going to remove categories for now...will add later?
-        # categories = []
-        for s in rec.get('senses', []):
-            glosses.extend(s.get('glosses') or [])
-            # for c in s.get('categories', []):
-            #     nm = c.get('name')
-            #     if nm:
-            #         categories.append(nm)
-        glosses = list(dict.fromkeys(glosses))
-        # categories = list(dict.fromkeys(categories))
-        return {
-            'id': f"{rec.get('word','')}_{rec.get('pos','')}",
-            'word': rec.get('word',''),
-            'lang_code': rec.get('lang_code',''),
-            'pos': rec.get('pos',''),
-            'forms': forms,
-            'romanizations': romans,
-            'glosses': glosses,
-            # 'categories': categories,
-            'senses_count': len(rec.get('senses', [])),
+class AssyrianSchema:
+    def __init__(self):
+        # self.schema = {
+        #     "name": "assyrian_dictionary",
+        #     "enable_nested_fields": True,
+        #     "fields": [
+        #         {"name": "id", "type": "string"},
+        #         {"name": "lemma", "type": "string"},
+        #         {"name": "canonical", "type": "string", "optional": True},
+        #         {"name": "lang_code", "type": "string", "facet": True},
+        #         {"name": "pos", "type": "string", "facet": True},
+        #         {"name": "forms", "type": "string[]", "optional": True},  # list of surface forms
+        #         {"name": "romanizations", "type": "string[]", "optional": True},  # extracted romanization forms
+        #         {"name": "glosses", "type": "string[]"},  # glosses aggregated from senses
+        #         {"name": "examples_english", "type": "string[]", "optional": True},  # example translations aggregated from senses
+        #         {"name": "examples_syriac", "type": "string[]", "optional": True},  # example texts aggregated from senses
+        #     ],
+        # }
+        self.schema = {
+            "name": "assyrian_dictionary",
+            "enable_nested_fields": True,
+            "fields": [
+                {"name": "pos", "type": "string" },
+                {"name": "forms.form", "type": "string[]"},
+                {"name": "forms.roman", "type": "string[]", "optional": True},
+                {"name": "word", "type": "string"},
+                {"name": "senses.glosses", "type": "string[]"},
+            ]
         }
+        
+    @staticmethod
+    def create_document(id: str, lemma: str, lang_code: str, pos: str,
+                        forms: List[str], romanizations: List[str],
+                        glosses: List[str], examples_english: List[str],
+                        examples_syriac: List[str], canonical: str = None) -> Dict[str, Any]:
+        return {
+            "id": id,
+            "lemma": lemma,
+            "canonical": canonical,
+            "lang_code": lang_code,
+            "pos": pos,
+            "forms": forms,
+            "romanizations": romanizations,
+            "glosses": glosses,
+            "examples_english": examples_english,
+            "examples_syriac": examples_syriac,
+        }
+
+def _load_dotenv_from_repo_root(dotenv_filename: str = ".env") -> None:
+    """Load simple KEY=VALUE pairs from a .env file at the repository root into os.environ.
+
+    This avoids adding an external dependency; it only sets variables that are not
+    already present in the environment.
+    """
+    repo_root = Path(__file__).resolve().parents[1]
+    dotenv_path = repo_root / dotenv_filename
+    if not dotenv_path.exists():
+        return
+    try:
+        for raw in dotenv_path.read_text(encoding="utf-8").splitlines():
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" not in line:
+                continue
+            key, val = line.split("=", 1)
+            key = key.strip()
+            val = val.strip()
+            if (val.startswith('"') and val.endswith('"')) or (val.startswith("'") and val.endswith("'")):
+                val = val[1:-1]
+            if key and key not in os.environ:
+                os.environ[key] = val
+    except Exception:
+        # Don't fail loudly for this convenience loader; fall back to environment only.
+        pass
+
+
+def update_collection(client: TypesenseClient, schema: dict) -> None:
+    """Import documents from kaikki JSONL into the Typesense collection."""
+    src_path = os.path.join(os.path.dirname(__file__), 'data', 'kaikki.org-dictionary-AssyrianNeoAramaic.jsonl')
+    coll = client.client.collections[schema["name"]].documents
 
     batch = []
     batch_size = 500
@@ -227,24 +193,60 @@ if __name__ == "__main__":
             except Exception:
                 print(f"Skipping malformed line: {line[:30]}...")
                 continue  # skip malformed lines
-            doc = transform(rec)
-            batch.append(doc)
+            # docs = transform(rec)
+            # batch.extends(docs)
+            batch.append(rec)
             if len(batch) >= batch_size:
                 payload = '\n'.join(json.dumps(b, ensure_ascii=False) for b in batch)
-                coll.import_(payload, {'action': 'upsert'})
+                result =  coll.import_(payload, {'action': 'upsert'})
+                if '400' in result:
+                    print("Import result:", result)
                 imported += len(batch)
                 batch.clear()
     if batch:
         payload = '\n'.join(json.dumps(b, ensure_ascii=False) for b in batch)
-        coll.import_(payload, {'action': 'upsert'})
+        result = coll.import_(payload, {'action': 'upsert'})
+        # print if success is in result string
+        if '400' in result:
+            print("Import result:", result)
         imported += len(batch)
     logger.info("Imported %d documents into assyrian_dictionary", imported)
 
-    # Example search (uncomment to run)
-    # res = client.collections['assyrian_dictionary'].documents.search({
-    #     'q': 'ܟܠܒܐ',
-    #     'query_by': 'glosses, word, forms, romanizations',
-    #     'filter_by': 'pos:=[noun]',
-    #     'per_page': 5,
-    # })
-    # print(json.dumps(res, ensure_ascii=False, indent=2))
+
+def test_query(client: TypesenseClient) -> None:
+    """Run an example search query against the collection."""
+    res = client.client.collections['assyrian_dictionary'].documents.search({
+        'q': 'ܟܠܒܐ',
+        'query_by': 'glosses, word, forms, romanizations',
+        'filter_by': 'pos:=[noun]',
+        'per_page': 5,
+    })
+    print(json.dumps(res, ensure_ascii=False, indent=2))
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Typesense helper script for Assyrian dictionary management"
+    )
+    parser.add_argument(
+        "action",
+        choices=["update", "test"],
+        help="Action to perform: 'update' to import documents, 'test' to run example query"
+    )
+    args = parser.parse_args()
+
+    _load_dotenv_from_repo_root()
+
+    api_key = os.getenv("TYPESENSE_API_KEY", "xyz")
+    client = TypesenseClient(api_key=api_key, host="localhost", port=8108, protocol="http")
+
+    # Schema for Assyrian dictionary collection (add required 'id' field)
+    assyrian_schema = AssyrianSchema().schema
+
+    # Create collection if missing
+    client.ensure_collections([assyrian_schema], overwrite=True)
+
+    if args.action == "update":
+        update_collection(client, assyrian_schema)
+    elif args.action == "test":
+        test_query(client)
