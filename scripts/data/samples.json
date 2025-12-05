@@ -1,0 +1,297 @@
+{
+  "pos": "noun",
+  "head_templates": [
+    {
+      "name": "aii-noun",
+      "args": { "1": "ܟܲܠܒܬ݂ܵܐ", "2": "f-s", "pl": "ܟܲܠܒ̈ܵܬ݂ܵܐ", "m": "ܟܲܠܒܵܐ" },
+      "expansion": "ܟܲܠܒܬ݂ܵܐ • (kalbṯā) f sg (plural ܟܲܠܒ̈ܵܬ݂ܵܐ (kalbāṯā), masculine ܟܲܠܒܵܐ (kalbā))"
+    }
+  ],
+  "forms": [
+    { "form": "ܟܲܠܒܬ݂ܵܐ", "tags": ["canonical", "feminine", "singular"] },
+    { "form": "kalbṯā", "tags": ["romanization"] },
+    { "form": "ܟܲܠܒ̈ܵܬ݂ܵܐ", "roman": "kalbāṯā", "tags": ["plural"] },
+    { "form": "ܟܲܠܒܵܐ", "roman": "kalbā", "tags": ["masculine"] },
+    { "form": "no-table-tags", "source": "inflection", "tags": ["table-tags"] },
+    {
+      "form": "aii-infl-noun/f",
+      "source": "inflection",
+      "tags": ["inflection-template"]
+    },
+    {
+      "form": "ܟܲܠܒܵܐ",
+      "tags": ["absolute", "singular"],
+      "source": "inflection",
+      "roman": "kalbā"
+    },
+    {
+      "form": "ܟܲܠܒܬ݂ܝܼ",
+      "tags": ["first-person", "possessed-form", "singular"],
+      "source": "inflection",
+      "roman": "kalbṯī"
+    },
+    {
+      "form": "ܟܲܠܒܬ݂ܲܢ",
+      "tags": ["first-person", "plural", "possessed-form"],
+      "source": "inflection",
+      "roman": "kalbṯan"
+    },
+    {
+      "form": "ܟܲܠܒܲܬ݂",
+      "tags": ["construct", "singular"],
+      "source": "inflection",
+      "roman": "kalbaṯ"
+    },
+    {
+      "form": "ܟܲܠܒܬ݂ܘܼܟ݂",
+      "tags": ["masculine", "possessed-form", "second-person", "singular"],
+      "source": "inflection",
+      "roman": "kalbṯōḵ"
+    },
+    {
+      "form": "ܟܲܠܒܬ݂ܵܟ݂ܝ",
+      "tags": ["feminine", "possessed-form", "second-person", "singular"],
+      "source": "inflection",
+      "roman": "kalbṯāḵ"
+    },
+    {
+      "form": "ܟܲܠܒܬ݂ܲܘܟ݂ܘܿܢ",
+      "tags": ["plural", "possessed-form", "second-person"],
+      "source": "inflection",
+      "roman": "kalbṯawḵōn"
+    },
+    {
+      "form": "ܟܲܠܒܬ݂ܵܐ",
+      "tags": ["emphatic", "singular"],
+      "source": "inflection",
+      "roman": "kalbṯā"
+    },
+    {
+      "form": "ܟܲܠܒܬ݂ܹܗ",
+      "tags": ["masculine", "possessed-form", "singular", "third-person"],
+      "source": "inflection",
+      "roman": "kalbṯēh"
+    },
+    {
+      "form": "ܟܲܠܒܬ݂ܵܗ̇",
+      "tags": ["feminine", "possessed-form", "singular", "third-person"],
+      "source": "inflection",
+      "roman": "kalbṯāh"
+    },
+    {
+      "form": "ܟܲܠܒܬ݂ܗܘܿܢ",
+      "tags": ["plural", "possessed-form", "third-person"],
+      "source": "inflection",
+      "roman": "kalbṯhōn"
+    },
+    {
+      "form": "ܟܲܠܒܵܢ̈",
+      "tags": ["absolute", "plural"],
+      "source": "inflection",
+      "roman": "kalbān"
+    },
+    {
+      "form": "ܟܲܠܒܵܬ݂ܝܼ̈",
+      "tags": ["first-person", "possessed-form", "singular"],
+      "source": "inflection",
+      "roman": "kalbāṯī"
+    },
+    {
+      "form": "ܟܲܠܒܵܬ݂ܲܢ̈",
+      "tags": ["first-person", "plural", "possessed-form"],
+      "source": "inflection",
+      "roman": "kalbāṯan"
+    },
+    {
+      "form": "ܟܲܠܒܵܬ݂̈",
+      "tags": ["construct", "plural"],
+      "source": "inflection",
+      "roman": "kalbāṯ"
+    },
+    {
+      "form": "ܟܲܠܒܵܬ݂ܘܼ̈ܟ݂",
+      "tags": ["masculine", "possessed-form", "second-person", "singular"],
+      "source": "inflection",
+      "roman": "kalbāṯōḵ"
+    },
+    {
+      "form": "ܟܲܠܒܵܬ݂ܵܟ݂ܝ̈",
+      "tags": ["feminine", "possessed-form", "second-person", "singular"],
+      "source": "inflection",
+      "roman": "kalbāṯāḵ"
+    },
+    {
+      "form": "ܟܲܠܒܵܬ݂ܲܘ̈ܟ݂ܘܿܢ",
+      "tags": ["plural", "possessed-form", "second-person"],
+      "source": "inflection",
+      "roman": "kalbāṯawḵōn"
+    },
+    {
+      "form": "ܟܲܠܒ̈ܵܬ݂ܵܐ",
+      "tags": ["emphatic", "plural"],
+      "source": "inflection",
+      "roman": "kalbāṯā"
+    },
+    {
+      "form": "ܟܲܠܒ̈ܵܬ݂ܹܗ",
+      "tags": ["masculine", "possessed-form", "singular", "third-person"],
+      "source": "inflection",
+      "roman": "kalbāṯēh"
+    },
+    {
+      "form": "ܟܲܠܒ̈ܵܬ݂ܵܗ̇",
+      "tags": ["feminine", "possessed-form", "singular", "third-person"],
+      "source": "inflection",
+      "roman": "kalbāṯāh"
+    },
+    {
+      "form": "ܟܲܠܒܵܬ݂ܗ̈ܘܿܢ",
+      "tags": ["plural", "possessed-form", "third-person"],
+      "source": "inflection",
+      "roman": "kalbāṯhōn"
+    }
+  ],
+  "inflection_templates": [
+    { "name": "aii-infl-noun/f", "args": { "1": "ܟܲܠܒ", "st": "1" } },
+    {
+      "name": "aii-infl-noun",
+      "args": {
+        "sg.abs.": "ܟܲܠܒܵܐ",
+        "sg.cstr.": "ܟܲܠܒܲܬ݂",
+        "sg.emph.": "ܟܲܠܒܬ݂ܵܐ",
+        "pl.abs.": "ܟܲܠܒܵܢ̈",
+        "pl.cstr.": "ܟܲܠܒܵܬ݂̈",
+        "pl.emph.": "ܟܲܠܒ̈ܵܬ݂ܵܐ",
+        "sg.1cs": "ܟܲܠܒܬ݂ܝܼ",
+        "sg.2ms": "ܟܲܠܒܬ݂ܘܼܟ݂",
+        "sg.2fs": "ܟܲܠܒܬ݂ܵܟ݂ܝ",
+        "sg.3ms": "ܟܲܠܒܬ݂ܹܗ",
+        "sg.3fs": "ܟܲܠܒܬ݂ܵܗ̇",
+        "sg.1cp": "ܟܲܠܒܬ݂ܲܢ",
+        "sg.2cp": "ܟܲܠܒܬ݂ܲܘܟ݂ܘܿܢ",
+        "sg.3cp": "ܟܲܠܒܬ݂ܗܘܿܢ",
+        "pl.1cs": "ܟܲܠܒܵܬ݂ܝܼ̈",
+        "pl.2ms": "ܟܲܠܒܵܬ݂ܘܼ̈ܟ݂",
+        "pl.2fs": "ܟܲܠܒܵܬ݂ܵܟ݂ܝ̈",
+        "pl.3ms": "ܟܲܠܒ̈ܵܬ݂ܹܗ",
+        "pl.3fs": "ܟܲܠܒ̈ܵܬ݂ܵܗ̇",
+        "pl.1cp": "ܟܲܠܒܵܬ݂ܲܢ̈",
+        "pl.2cp": "ܟܲܠܒܵܬ݂ܲܘ̈ܟ݂ܘܿܢ",
+        "pl.3cp": "ܟܲܠܒܵܬ݂ܗ̈ܘܿܢ"
+      }
+    }
+  ],
+  "sounds": [
+    { "tags": ["Standard"], "ipa": "[kal.bəθɑː]" },
+    { "tags": ["Standard"], "ipa": "[t͡ʃɑːlɪp.tɑː]" },
+    { "tags": ["Standard"], "ipa": "[kallɑːwtɑː]" }
+  ],
+  "etymology_text": "Feminine form of ܟܲܠܒܵܐ (kalbā), from Aramaic כַּלְבְּתָא (kalbəṯā); compare Arabic كَلْبَة (kalba) and Hebrew כַּלְבָּה (kalbá). The latter noun is an occupational noun derived from the former.",
+  "etymology_templates": [
+    {
+      "name": "inh",
+      "args": { "1": "aii", "2": "arc", "3": "כַּלְבְּתָא", "tr": "kalbəṯā" },
+      "expansion": "Aramaic כַּלְבְּתָא (kalbəṯā)"
+    },
+    {
+      "name": "cog",
+      "args": { "1": "ar", "2": "كَلْبَة" },
+      "expansion": "Arabic كَلْبَة (kalba)"
+    },
+    {
+      "name": "cog",
+      "args": { "1": "he", "2": "כַּלְבָּה", "tr": "kalbá" },
+      "expansion": "Hebrew כַּלְבָּה (kalbá)"
+    }
+  ],
+  "word": "ܟܠܒܬܐ",
+  "lang": "Assyrian Neo-Aramaic",
+  "lang_code": "aii",
+  "senses": [
+    {
+      "links": [
+        ["female", "female"],
+        ["dog", "dog"],
+        ["hound", "hound"],
+        ["bitch", "bitch"]
+      ],
+      "glosses": ["female dog, hound, bitch"],
+      "id": "en-ܟܠܒܬܐ-aii-noun-yWHGkNIE",
+      "categories": [
+        {
+          "name": "Assyrian Neo-Aramaic entries with incorrect language header",
+          "kind": "other",
+          "parents": [],
+          "source": "w+disamb",
+          "_dis": "38 12 19 31"
+        },
+        {
+          "name": "Canids",
+          "kind": "other",
+          "parents": [],
+          "source": "w+disamb",
+          "orig": "aii:Canids",
+          "langcode": "aii",
+          "_dis": "55 8 8 29"
+        },
+        {
+          "name": "Occupations",
+          "kind": "other",
+          "parents": [],
+          "source": "w+disamb",
+          "orig": "aii:Occupations",
+          "langcode": "aii",
+          "_dis": "56 6 6 33"
+        }
+      ]
+    },
+    {
+      "links": [["bitch", "bitch"]],
+      "raw_glosses": [
+        "(figuratively, offensive) bitch a term of abuse for a woman"
+      ],
+      "glosses": ["bitch a term of abuse for a woman"],
+      "tags": ["figuratively", "offensive"],
+      "id": "en-ܟܠܒܬܐ-aii-noun-AoYbJGEv",
+      "categories": [
+        {
+          "name": "Assyrian Neo-Aramaic entries with incorrect language header",
+          "kind": "other",
+          "parents": [],
+          "source": "w+disamb",
+          "_dis": "38 12 19 31"
+        }
+      ]
+    },
+    {
+      "links": [
+        ["pincers", "pincers"],
+        ["tongs", "tongs"],
+        ["tweezers", "tweezers"]
+      ],
+      "synonyms": [{ "word": "ܨܘܼܨ̈ܦܵܬ݂ܵܐ" }, { "word": "ܡܲܠܩܛܵܐ" }],
+      "raw_glosses": ["(figuratively, in the plural) pincers, tongs, tweezers"],
+      "glosses": ["pincers, tongs, tweezers"],
+      "tags": ["figuratively", "in-plural"],
+      "id": "en-ܟܠܒܬܐ-aii-noun-cNdm7txm",
+      "categories": [
+        {
+          "name": "Assyrian Neo-Aramaic entries with incorrect language header",
+          "kind": "other",
+          "parents": [],
+          "source": "w+disamb",
+          "_dis": "38 12 19 31"
+        },
+        {
+          "name": "Tools",
+          "kind": "other",
+          "parents": [],
+          "source": "w+disamb",
+          "orig": "aii:Tools",
+          "langcode": "aii",
+          "_dis": "18 8 57 17"
+        }
+      ]
+    }
+  ]
+}
