@@ -22,32 +22,48 @@ const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
     ],
   },
   additionalSearchParameters: {
-    query_by: "glosses, canonical, lemma, forms, romanizations",
+    query_by: "senses.glosses, forms.form, forms.roman, word",
   },
 });
 
 interface Hit {
-  lemma: string;
+  word: string;
+  senses: Array<any>;
   canonical: string;
-  glosses: string;
-  examples_english: string[];
-  examples_syriac: string[];
-  forms: [
-    {}
-  ];
-  romanizations: string[];
 }
 
 interface HitComponentProps {
   hit: Hit;
 }
 
+// const ExtractCanonical = (): string => {
+//   if (hit.forms) {
+//     for (const form of hit.forms) {
+//       if () {
+//   }
+
+const SimplifiedHit = (hit: any) =>{
+  return {
+    word: hit.word,
+    senses: hit.senses,
+    // take the form whose tags has "canonical"
+    canonical: hit.forms.find((form: any) => form.tags.includes("canonical"))?.form || hit.word,
+  } as Hit;
+}
+
 const HitComponent: React.FC<HitComponentProps> = ({ hit }) => {
-  console.log(hit);
+  const simplifiedHit = SimplifiedHit(hit);
   return (<div className="p-4 border-b">
     {/* fallback to lemma if no canonical */}
-    <h2 className="text-xl font-bold text-black">{hit.canonical || hit.lemma}</h2>
-    <p className="text-gray-700">{hit.glosses}</p>
+    <h2 className="text-xl font-bold text-black">{simplifiedHit.canonical}</h2>
+    {/* map through senses and have a bullet for each gloss in senses.glosses */}
+    <ul className="list-disc list-inside mt-2">
+      {simplifiedHit.senses.map((sense, index) => (
+        <li key={index} className="text-gray-700">
+          {sense.glosses.join(", ")}
+        </li>
+      ))}
+    </ul>
     {/* don't render examples if they are not available, also render all examples*/}
     {/* {hit.examples_english && hit.examples_english.length > 0 && (
       <div className="mt-2">
