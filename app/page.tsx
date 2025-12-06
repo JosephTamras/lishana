@@ -6,9 +6,9 @@ import {
   InfiniteHits,
   Configure,
   useSearchBox,
+  useInstantSearch
 } from "react-instantsearch";
 import React from "react";
-import { useSearchParams } from "next/navigation";
 
 const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
   server: {
@@ -22,7 +22,8 @@ const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
     ],
   },
   additionalSearchParameters: {
-    query_by: "senses.glosses, forms.form, forms.roman, word",
+    // query_by: "senses.glosses, forms.phonetic, glosses_embedding, forms.form, word",
+    query_by: "glosses_embedding",
   },
 });
 
@@ -30,25 +31,23 @@ interface Hit {
   word: string;
   senses: Array<any>;
   canonical: string;
+  canonical_phonetic: string;
 }
 
-interface HitComponentProps {
-  hit: Hit;
-}
-
-// const ExtractCanonical = (): string => {
-//   if (hit.forms) {
-//     for (const form of hit.forms) {
-//       if () {
-//   }
 
 const SimplifiedHit = (hit: any) =>{
   return {
     word: hit.word,
     senses: hit.senses,
+    forms: hit.forms,
     // take the form whose tags has "canonical"
     canonical: hit.forms.find((form: any) => form.tags.includes("canonical"))?.form || hit.word,
+    canonical_phonetic: hit.forms.find((form: any) => form.tags.includes("canonical"))?.phonetic || "",
   } as Hit;
+}
+
+interface HitComponentProps {
+  hit: Hit;
 }
 
 const HitComponent: React.FC<HitComponentProps> = ({ hit }) => {
@@ -56,6 +55,7 @@ const HitComponent: React.FC<HitComponentProps> = ({ hit }) => {
   return (<div className="p-4 border-b">
     {/* fallback to lemma if no canonical */}
     <h2 className="text-xl font-bold text-black">{simplifiedHit.canonical}</h2>
+    <h3 className="text-md font-semibold text-gray-600">{simplifiedHit.canonical_phonetic}</h3>
     {/* map through senses and have a bullet for each gloss in senses.glosses */}
     <ul className="list-disc list-inside mt-2">
       {simplifiedHit.senses.map((sense, index) => (
@@ -64,21 +64,6 @@ const HitComponent: React.FC<HitComponentProps> = ({ hit }) => {
         </li>
       ))}
     </ul>
-    {/* don't render examples if they are not available, also render all examples*/}
-    {/* {hit.examples_english && hit.examples_english.length > 0 && (
-      <div className="mt-2">
-        <h3 className="font-semibold text-black">Examples:</h3>
-        <ul className="list-disc list-inside">
-          {hit.examples_english.map((example, index) => (
-            <li key={index} className="text-gray-600">
-              {example} {hit.examples_syriac && hit.examples_syriac[index] ? ` - ܐܘ ܣܘܪܝܬ: ${hit.examples_syriac[index]}` : ""}
-            </li>
-          ))}
-        </ul>
-      </div>
-    )} */}
-    {/* <p className="text-gray-500 italic">Forms: {hit.forms}</p>
-    <p className="text-gray-500 italic">Romanizations: {hit.romanizations}</p> */}
   </div>)
 };
 
@@ -99,8 +84,23 @@ const SearchBoxComponent: React.FC = () => {
   );
 };
 
+const EmptyQueryBoundary: React.FC<{ children: React.ReactNode; fallback: React.ReactNode }> = ({ children, fallback }) => {
+  const { indexUiState } = useInstantSearch();
+
+  if (!indexUiState.query) {
+    return (
+      <>
+        {fallback}
+        <div hidden>{children}</div>
+      </>
+    );
+  }
+
+  return children;
+}
+
 export default function Home() {
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const indexName = "assyrian_dictionary";
 
   return (
@@ -114,12 +114,14 @@ export default function Home() {
         routing={{ stateMapping: singleIndex(indexName) }}
         // key={(searchParams.get("query") as string) || ""}
       >
-        <Configure hitsPerPage={10} />
+        <Configure hitsPerPage={10}/>
         <div className="flex flex-col w-full max-w-xl px-4">
           <SearchBoxComponent />
-          <InfiniteHits hitComponent={HitComponent} showPrevious={false} classNames={{
-            loadMore: "text-black"
-          }} />
+          <EmptyQueryBoundary fallback={null}>
+            <InfiniteHits hitComponent={HitComponent} showPrevious={false} classNames={{
+              loadMore: "text-black"
+            }} />
+          </EmptyQueryBoundary>
         </div>
       </InstantSearch>
     </div>
