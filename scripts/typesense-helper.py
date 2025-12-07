@@ -114,6 +114,7 @@ class AssyrianSchema:
                 {"name": "word", "type": "string"},
                 {"name": "senses.glosses", "type": "string[]"},
                 {"name": "forms.phonetic", "type": "string[]", "optional": True},
+                {"name": "canonical_phonetic", "type": "string", "optional": True},
                 {
                     "name": "glosses_embedding",
                     "type": "float[]",
@@ -136,6 +137,9 @@ class AssyrianSchema:
             word = form.get("form", "")
             if word:
                 form["phonetic"] = AIITranslit(word)['phonetic']
+                # if canoncial form in tags, add canonical_phonetic to record
+                if "canonical" in form.get("tags", []):
+                    record["canonical_phonetic"] = form["phonetic"]
         
         return record
 

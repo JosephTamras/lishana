@@ -23,7 +23,8 @@ const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
   },
   additionalSearchParameters: {
     // query_by: "senses.glosses, forms.phonetic, glosses_embedding, forms.form, word",
-    query_by: "glosses_embedding",
+    query_by: "senses.glosses, canonical_phonetic, forms.phonetic, glosses_embedding, forms.form",
+    // query_by_weights: "1, 5"
   },
 });
 
@@ -36,13 +37,14 @@ interface Hit {
 
 
 const SimplifiedHit = (hit: any) =>{
+  console.log("Original Hit:", hit);
   return {
     word: hit.word,
     senses: hit.senses,
     forms: hit.forms,
     // take the form whose tags has "canonical"
     canonical: hit.forms.find((form: any) => form.tags.includes("canonical"))?.form || hit.word,
-    canonical_phonetic: hit.forms.find((form: any) => form.tags.includes("canonical"))?.phonetic || "",
+    canonical_phonetic: hit.canonical_phonetic || "",
   } as Hit;
 }
 
