@@ -109,7 +109,8 @@ class AssyrianSchema:
             "enable_nested_fields": True,
             "fields": [
                 {"name": "pos", "type": "string"},
-                {"name": "forms.form", "type": "string[]"},
+                {"name": "forms.form", "type": "string[]"}, # array of all forms
+                {"name": "canonical_form", "type": "string", "optional": True},
                 {"name": "forms.roman", "type": "string[]", "optional": True},
                 {"name": "word", "type": "string"},
                 {"name": "senses.glosses", "type": "string[]"},
@@ -139,6 +140,7 @@ class AssyrianSchema:
                 form["phonetic"] = AIITranslit(word)['phonetic']
                 # if canoncial form in tags, add canonical_phonetic to record
                 if "canonical" in form.get("tags", []):
+                    record["canonical_form"] = form["form"]
                     record["canonical_phonetic"] = form["phonetic"]
         
         return record

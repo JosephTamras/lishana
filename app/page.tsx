@@ -6,9 +6,11 @@ import {
   InfiniteHits,
   Configure,
   useSearchBox,
-  useInstantSearch
+  useInstantSearch,
+  Highlight
 } from "react-instantsearch";
 import React from "react";
+import { BaseHit } from "instantsearch.js";
 
 const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
   server: {
@@ -22,47 +24,25 @@ const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
     ],
   },
   additionalSearchParameters: {
-    // query_by: "senses.glosses, forms.phonetic, glosses_embedding, forms.form, word",
-    query_by: "senses.glosses, canonical_phonetic, forms.phonetic, glosses_embedding, forms.form",
-    // query_by_weights: "1, 5"
+    query_by: "senses.glosses, canonical_phonetic, forms.phonetic, glosses_embedding, canonical_form, forms.form",
   },
 });
 
-interface Hit {
-  word: string;
-  senses: Array<any>;
-  canonical: string;
-  canonical_phonetic: string;
-}
-
-
-const SimplifiedHit = (hit: any) =>{
-  console.log("Original Hit:", hit);
-  return {
-    word: hit.word,
-    senses: hit.senses,
-    forms: hit.forms,
-    // take the form whose tags has "canonical"
-    canonical: hit.forms.find((form: any) => form.tags.includes("canonical"))?.form || hit.word,
-    canonical_phonetic: hit.canonical_phonetic || "",
-  } as Hit;
-}
-
-interface HitComponentProps {
-  hit: Hit;
-}
-
-const HitComponent: React.FC<HitComponentProps> = ({ hit }) => {
-  const simplifiedHit = SimplifiedHit(hit);
+const HitComponent: React.FC<BaseHit> = ({ hit }) => {
+  console.log(hit);
   return (<div className="p-4 border-b">
     {/* fallback to lemma if no canonical */}
-    <h2 className="text-xl font-bold text-black">{simplifiedHit.canonical}</h2>
-    <h3 className="text-md font-semibold text-gray-600">{simplifiedHit.canonical_phonetic}</h3>
+    <h2 className="text-xl font-bold text-black">
+      <Highlight hit={hit} attribute="canonical_form" />
+    </h2>
+    <h3 className="text-md font-semibold text-gray-600">
+      <Highlight hit={hit} attribute="canonical_phonetic" highlightedTagName="mark" />
+    </h3>
     {/* map through senses and have a bullet for each gloss in senses.glosses */}
     <ul className="list-disc list-inside mt-2">
-      {simplifiedHit.senses.map((sense, index) => (
+      {hit.senses.map((_sense: any, index: React.Key | null | undefined) => (
         <li key={index} className="text-gray-700">
-          {sense.glosses.join(", ")}
+          <Highlight hit={hit} attribute={`senses.${index}.glosses`} highlightedTagName="mark" />
         </li>
       ))}
     </ul>
@@ -116,7 +96,7 @@ export default function Home() {
         routing={{ stateMapping: singleIndex(indexName) }}
         // key={(searchParams.get("query") as string) || ""}
       >
-        <Configure hitsPerPage={10}/>
+        <Configure hitsPerPage={10} />
         <div className="flex flex-col w-full max-w-xl px-4">
           <SearchBoxComponent />
           <EmptyQueryBoundary fallback={null}>
