@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_Syriac_Eastern } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -10,6 +10,11 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const notoSansSyriacEastern = Noto_Sans_Syriac_Eastern({
+  variable: "--font-syriac",
+  subsets: ["syriac"],
 });
 
 export const metadata: Metadata = {
@@ -25,10 +30,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log(notoSansSyriacEastern, 'noto_syriac_font');
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansSyriacEastern.variable} antialiased`}
       >
         {children}
       </body>
