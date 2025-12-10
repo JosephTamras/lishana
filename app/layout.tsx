@@ -30,7 +30,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log(notoSansSyriacEastern, 'noto_syriac_font');
   return (
     <html lang="en" suppressHydrationWarning>
       <body
