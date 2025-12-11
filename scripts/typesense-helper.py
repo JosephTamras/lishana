@@ -147,7 +147,7 @@ class AssyrianSchema:
 
 
 
-def _load_dotenv_from_repo_root(dotenv_filename: str = ".env") -> None:
+def _load_dotenv_from_repo_root(dotenv_filename: str = ".env.local") -> None:
     """Load simple KEY=VALUE pairs from a .env file at the repository root into os.environ.
 
     This avoids adding an external dependency; it only sets variables that are not
@@ -240,7 +240,7 @@ if __name__ == "__main__":
 
     _load_dotenv_from_repo_root()
 
-    api_key = os.getenv("TYPESENSE_API_KEY", "xyz")
+    api_key = os.getenv("NEXT_PUBLIC_TYPESENSE_API_KEY", "xyz")
     client = TypesenseClient(
         api_key=api_key, host="localhost", port=8108, protocol="http"
         )

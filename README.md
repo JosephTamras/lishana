@@ -16,18 +16,9 @@ Lishana is an Assyrian-English dictionary powered by [Typesense](https://github.
 ## Setup
 1. In order to set this up locally, you will first need to set up a Typesense server. The easiest way to do this is to follow the [instructions](https://typesense.org/docs/guide/install-typesense.html) in Typesense's documentation. 
 
-2. Please download the [Kaikki data for Assyrian](https://kaikki.org/dictionary/Assyrian%20Neo-Aramaic/index.html) and save it to `./scripts/data`. Also, be sure to 
+2. Please download the [Kaikki data for Assyrian](https://kaikki.org/dictionary/Assyrian%20Neo-Aramaic/index.html) and save it to `./scripts/data`.
 
-```bash
-pip install typesense
-```
-3. Index the data by running,
-```bash
-python scripts/typesense_helper.py
-```
-This script adds to the Kaikki data by isolating a field for the canonical form of the word as well as its phonetic transliteration which the AIITranslit.py script provides us.
-
-4. A `.env.local` file must be created with the following environement variables
+3. A `.env.local` file must be created with the following environement variables
 ```
 NEXT_PUBLIC_TYPESENSE_URL=http://localhost:8108
 NEXT_PUBLIC_TYPESENSE_API_KEY=<YOUR_TYPESENSE_API_KEY>
@@ -35,6 +26,16 @@ NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME=assyrian_dictionary
 ```
 
 Note: The api_key defaults to `xyz`
+
+4. Install dependencies for the typesense_helper script
+```bash
+pip install typesense
+```
+Index the data by running,
+```bash
+python scripts/typesense_helper.py update
+```
+This script adds to the Kaikki data by isolating a field for the canonical form of the word as well as its phonetic transliteration which the AIITranslit.py script provides us.
 
 5. Now, all you need to do is run 
 
