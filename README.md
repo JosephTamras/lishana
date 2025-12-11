@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# [Lishana](https://lishana.vercel.app/) - Assyrian-English Dictionary
+Lishana is an Assyrian-English dictionary powered by [Typesense](https://github.com/typesense/typesense) -- a free, open-source search engine backend. Assyrian ([Suret](https://en.wikipedia.org/wiki/Suret_language)) is a very low-resource semitic language that descends from Old Aramaic. The goal of this project is to produce an even better search engine for the relatively small corpus of terms (~6,000 entries) that exist in the [Kaikki](https://kaikki.org/) machine readable dictionary. 
 
-## Getting Started
+## Features
+- Full-text Search: Search in English or Syriac with built-in typo tolerance.
 
-First, run the development server:
+- Flexible Querying: Search by glosses, canonical forms, inflected forms, or transliterations.
+
+- Semantic Search: Vector-based search using embeddings of the glosses.
+
+- Hybrid Search: Fuses lexical and semantic results.
+    - This ensures that even if a query doesn't strictly match a dictionary entry, the engine can retrieve conceptually similar results.
+
+- Reactive UI: Built with InstantSearch.js for a fast, app-like experience.
+
+## Setup
+1. In order to set this up locally, you will first need to set up a Typesense server. The easiest way to do this is to follow the [instructions](https://typesense.org/docs/guide/install-typesense.html) in Typesense's documentation. 
+
+2. Please download the [Kaikki data for Assyrian](https://kaikki.org/dictionary/Assyrian%20Neo-Aramaic/index.html) and save it to `./scripts/data`. Also, be sure to 
+
+```bash
+pip install typesense
+```
+3. Index the data by running,
+```bash
+python scripts/typesense_helper.py
+```
+This script adds to the Kaikki data by isolating a field for the canonical form of the word as well as its phonetic transliteration which the AIITranslit.py script provides us.
+
+4. A `.env.local` file must be created with the following environement variables
+```
+NEXT_PUBLIC_TYPESENSE_URL=http://localhost:8108
+NEXT_PUBLIC_TYPESENSE_API_KEY=<YOUR_TYPESENSE_API_KEY>
+NEXT_PUBLIC_TYPESENSE_COLLECTION_NAME=assyrian_dictionary
+```
+
+Note: The api_key defaults to `xyz`
+
+5. Now, all you need to do is run 
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+and your dev server should start at `localhost:3000`. Now just type in the searchbox a query in English or Syriac!
