@@ -1,4 +1,4 @@
-# [Lishana](https://lishana.vercel.app/) - Assyrian-English Dictionary
+# [Lishana (ܠܫܢܐ) — “Language / Tongue”](https://lishana.vercel.app/) - Assyrian-English Dictionary
 Lishana is an Assyrian-English dictionary powered by [Typesense](https://github.com/typesense/typesense) -- a free, open-source search engine backend. Assyrian ([Suret](https://en.wikipedia.org/wiki/Suret_language)) is a very low-resource semitic language that descends from Old Aramaic. The goal of this project is to produce an even better search engine for the relatively small corpus of terms (~6,000 entries) that exist in the [Kaikki](https://kaikki.org/) machine readable dictionary. 
 
 ## Features
