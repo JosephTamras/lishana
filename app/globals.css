@@ -13,10 +13,15 @@
   --font-syriac: var(--font-syriac);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
   }
 }
 
@@ -24,6 +29,10 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Syriac text styling */
@@ -40,3 +49,24 @@ mark {
   font-weight: 500;
   color: #000;
 }
+
+/* Touch-friendly interactive elements */
+@supports (--webkit-touch-callout: none) {
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+/* Prevent layout shift on mobile */
+input,
+textarea,
+button,
+select {
+  font-size: 16px;
+}
+

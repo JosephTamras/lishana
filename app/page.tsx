@@ -26,26 +26,32 @@ const typesenseInstantsearchAdapter = new TypesenseInstantSearchAdapter({
 export default function Home() {
   // const searchParams = useSearchParams();
   return (
-    <div className="flex justify-center items-center flex-col min-h-screen py-2 bg-white">
-      <h1 className="text-3xl font-semibold mb-8 text-black">
+    <div className="flex justify-center items-center flex-col min-h-screen py-4 sm:py-2 bg-white dark:bg-slate-950 transition-colors px-4">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 text-slate-900 dark:text-slate-50 text-center">
         Assyrian-English Dictionary
       </h1>
+      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mb-6 sm:mb-8 text-center italic">
+        Search by sound, meaning, or definition
+      </p>
       <InstantSearch
         indexName={"assyrian_dictionary"}
         searchClient={typesenseInstantsearchAdapter.searchClient}
         routing={{ stateMapping: singleIndex("assyrian_dictionary") }}
       >
         <Configure hitsPerPage={10} />
-        <div className="flex flex-col w-full max-w-xl px-4">
+        <div className="flex flex-col w-full max-w-2xl gap-4 sm:gap-6">
           <SearchBox />
           <EmptyQueryBoundary fallback={null}>
-            <InfiniteHits
-              hitComponent={HitComponent}
-              showPrevious={false}
-              classNames={{
-                loadMore: "text-black",
-              }}
-            />
+            <div className="bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+              <InfiniteHits
+                hitComponent={HitComponent}
+                showPrevious={false}
+                classNames={{
+                  loadMore:
+                    "text-slate-900 dark:text-slate-50 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 py-3 rounded transition-colors w-full font-medium text-sm sm:text-base touch-none",
+                }}
+              />
+            </div>
           </EmptyQueryBoundary>
         </div>
       </InstantSearch>

@@ -13,6 +13,11 @@ export const EmptyQueryBoundary: React.FC<{
     return (
       <>
         {fallback}
+        <div className="text-center py-12">
+          <p className="text-slate-500 dark:text-slate-400">
+            Start typing to search the dictionary
+          </p>
+        </div>
         <div hidden>{children}</div>
       </>
     );
